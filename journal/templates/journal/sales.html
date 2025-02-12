@@ -1,0 +1,74 @@
+{% extends "main/base.html" %}
+{% load static %}
+
+{% block content %}
+<h2 class="no-print mt-2" style="text-align: center;">🔥🔥🔥 Продано за сегодня 🔥🔥🔥
+  <button onclick="printDiv('contentOnPage')" type="button" class="btn btn-light btn-secondary btn-sm" id="printButton"
+  aria-expanded="false" >Печать</button>
+</h2>
+  <table class="grid-table">
+    <thead>
+      <tr>
+        <th scope="col" class="category-name">Категория</th>
+        <th scope="col" class="title-name">Тайтл</th>
+        <th scope="col" class="hero-name">Персонаж</th>
+        <th scope="col" class="barcode-name">Штрих-код</th>
+        <th scope="col" class="price-name">Цена</th>
+        <th scope="col" class="quantity-name">Кол-во</th>
+        <th scope="col" class="total-discount">Сумма скидки</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for el in sales %}
+      <tr class="table-item" data-id="{{ el.id }}">
+        <td class="category-name">{{ el.product.category.name }}</td>
+        <td class="title-name">{{ el.product.hero.title.name }}</td>
+        <td class="hero-name">{{ el.product.hero.name }}</td>
+        <td class="barcode-name">{{ el.product.readable_barcode }}</td>
+        <td class="price-name">{{ el.product.price }} ₽</td>
+        <td class="quantity-name">
+          <input type="number" name="quantity_{{ el.id }}" value="{{ el.quantity }}" min="0" max="9999" 
+            class="quantity my-1" style="width: 50px; height: 20px;">
+        </td>
+        <td class="total-discount">
+          <div class="d-flex" style="height: 20px;">
+            <input class="discount" type="number" name="discount_{{ el.id }}" value="{{ el.total_discount }}" 
+              min="0" max="9999" style="width: 50px; height: 20px;">
+              <p style="padding-left: 10px;"> ₽</p>
+            <button type="submit" class="remove btn-link btn-sm no-print" 
+              style="border: 0; background-color: transparent;">
+              {% csrf_token %}
+              <img src= {% static "icons/trash3-fill.svg" %} title="Удалить из корзины" alt="Remove from sales" 
+              width="18" height="18" style="margin-top: -11px;">
+            </button>
+          </div>
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+          <td colspan="7" style="text-align: center;">Корзина пуста</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <div class="d-flex justify-content-center no-print mt-2">
+    <button class="btn btn-success" name="sales-checkout" id="sales-checkout">
+      {% csrf_token %}
+      Провести продажи</button>
+  </div>
+<span id="error"></span>
+
+
+<script>
+  function printDiv(divId) {
+    var printContent = document.getElementById(divId).innerHTML;
+    var originalContent = document.body.innerHTML;
+    document.body.innerHTML = printContent;
+    window.print();
+    document.body.innerHTML = originalContent;
+  }
+</script>
+
+<script src={% static "js/jquery/jquery-3.7.0.min.js" %}></script>
+<script src={% static "js/jquery-sales.js" %}></script>
+{% endblock %}

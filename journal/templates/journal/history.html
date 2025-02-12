@@ -1,0 +1,88 @@
+{% extends "main/base.html" %}
+{% load static %}
+
+{% block content %}
+<h2 class="no-print mt-2" style="text-align: center;">История операций
+  <button onclick="printDiv('contentOnPage')" type="button" class="btn btn-light btn-secondary btn-sm" id="printButton"
+  aria-expanded="false" >Печать</button>
+</h2>
+<div class="d-flex" style="justify-content: space-between;">
+  <span style="float: left;">Кассовый баланс: {{ money }} ₽</span>
+  <span style="float: right;"> Сумма операций: {{ sum }} ₽</span>
+</div>
+<div class="no-print mb-2">
+  Период с: 
+  <input type="date" id="dateStarts" name="trip-start" value="2025-01-01" min="2025-01-01" max="2100-12-31" 
+    onchange="filterDate()"/>
+  по: 
+  <input type="date" id="dateEnds" name="trip-start" value="2025-01-01" min="2025-01-01" max="2100-12-31" 
+    onchange="filterDate()"/>
+</div>
+<table class="grid-table">
+    <table class="grid-table" id="journalTable">
+      <thead>
+        <tr>
+          <th scope="col" class="category-name">Операция</th>
+          <th scope="col" class="date-journal">Дата</th>
+          <th scope="col" class="hero-journal">Персонаж</th>
+          <th scope="col" class="barcode-journal">Штрих-код</th>
+          <th scope="col" class="quantity-name">Кол-во</th>
+          <th scope="col" class="calculate no-print">Формула</th>
+          <th scope="col" class="total-sum">Сумма</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for el in journal %}
+        <tr class="table-item" data-id="{{ el.id }}" data-date="{{ el.date|date:"Y-m-d" }}">
+          <td class="category-name">{{ el.type_display }}</td>
+          <td class="date-journal">{{ el.date }}</td>
+          <td class="hero-journal">{{ el.category }}</td>
+          <td class="barcode-journal">{{ el.readable_barcode }}</td>
+          <td class="quantity-name">{{ el.quantity }}</td>
+          <td class="calculate no-print">{{ el.calcucations_display }}</td>
+          <td class="total-sum">{{ el.total_sum }} ₽</td>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="7" style="text-align: center;">История пуста</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  
+<script>
+  function printDiv(divId) {
+    var printContent = document.getElementById(divId).innerHTML;
+    var originalContent = document.body.innerHTML;
+    document.body.innerHTML = printContent;
+    window.print();
+    document.body.innerHTML = originalContent;
+  }
+</script>
+<script>
+
+  document.getElementById('dateStarts').valueAsDate = new Date();
+  document.getElementById('dateEnds').valueAsDate = new Date();
+  
+  function filterDate() {
+    var dateStart = document.getElementById('dateStarts').value;
+    var dateEnd = document.getElementById('dateEnds').value;
+
+    var startDate = new Date(dateStart);
+    var endDate = new Date(dateEnd);
+
+    var rows = document.querySelectorAll("#journalTable tbody tr");
+    rows.forEach(function(row) {
+      var rowDate = new Date(row.getAttribute('data-date'));
+
+      if (rowDate >= startDate && rowDate <= endDate) {
+        row.style.display = '';
+      } else {
+        row.style.display = 'none';
+      }
+    });
+  }
+
+</script>
+{% endblock %}

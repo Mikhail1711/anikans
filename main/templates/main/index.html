@@ -1,48 +1,83 @@
-<!DOCTYPE html>
-<html lang="ru">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ content }}</title>
-    <link rel="stylesheet" href="./styles/style.css">
+{% extends "main/base.html" %}
+{% load static %}
 
-    <meta property="og:title" content="Заголовок страницы в OG">
-    <meta property="og:description" content="Описание страницы в OG">
-    <meta property="og:image" content="https://example.com/image.jpg">
-    <meta property="og:url" content="https://example.com/">
-</head>
-<body>
-  <header>
-    <h2>Личный сайт</h2>
-    <p>Который сделан на основе готового шаблона</p>
-    <nav>
-      <ul>
-        <li><a href="index.html">Эта страница</a></li>
-        <li><a href="catalog.html">Другая страница</a></li>
-      </ul>
-    </nav>
-  </header>
-  <main>
-    <article>
-      <section>
-        <h2>Первая секция</h2>
-        <p>Она обо мне</p>
-        <img src="images/image.png" alt="Человек и пароход">
-        <p>Но может быть и о семантике, я пока не решил.</p>
-      </section>
-      <section>
-        <h2>Вторая секция</h2>
-        <p>Она тоже обо мне</p>
-      </section>
-      <section>
-        <h2>И третья</h2>
-        <p>Вы уже должны были начать догадываться.</p>
-      </section>
-    </article>
-  </main>
-  <footer>
-    <p>Сюда бы я вписал информацию об авторе и ссылки на другие сайты</p>
-  </footer>
-  <!-- сюда можно подключить jquery <script src="scripts/app.js" defer></script> -->
-</body>
-</html>
+{% block content %}
+<h2 class="no-print mt-2" style="text-align: center;">Товары по фильтрам
+  <button onclick="printDiv('contentOnPage')" type="button" class="btn btn-light btn-secondary btn-sm" id="printButton"
+  aria-expanded="false" >Печать</button>
+</h2>
+<table class="grid-table">
+  <thead>
+    <tr>
+      <th scope="col" class="category-name">Категория</th>
+      <th scope="col" class="title-name">Тайтл</th>
+      <th scope="col" class="hero-name">Персонаж</th>
+      <th scope="col" class="barcode-name">Штрих-код</th>
+      <th scope="col" class="price-name">Цена</th>
+      <th scope="col" class="quantity-name">Кол-во</th>
+      <th scope="col" class="butt-on no-print">Оформить</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for product in products %}
+    <tr class="table-item" data-id="{{ product.id }}">
+      <td class="category-name">{{ product.category.name }}</td>
+      <td class="title-name">{{ product.hero.title.name }}</td>
+      <td class="hero-name">{{ product.hero.name }}</td>
+      <td class="barcode-name">
+        <div class="accordion" id="accordion{{ forloop.counter }}">
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="heading{{ forloop.counter }}">
+              <button class="accordion-button collapsed pb-1 px-2" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ forloop.counter }}" 
+                aria-expanded="false" aria-controls="collapse{{ forloop.counter }}">
+                <p style="text-align: right; white-space: nowrap;">{{ product.readable_barcode }}<br><span style="color: gray;">{{ product.item }}</span></p>
+              </button>
+            </h2>
+            <div class="accordion-collapse collapse" id="collapse{{ forloop.counter }}" aria-labelledby="heading{{ forloop.counter }}" data-bs-parent="#accordion{{ forloop.counter }}">
+              <div class="accordion-body">{{ product.description }}</div>
+            </div>
+          </div>
+        </div>
+      </td>
+      <td class="price-name">{{ product.price }} ₽</td>
+      <td class="quantity-name">{{ product.quantity }} шт.</td>
+      <td class="butt-on no-print">
+        <div class="button-container d-flex justify-content-start" data-product-id="product{{ product.id }}">
+          <button type="submit" name="checkout" value="Supplies" class="checkout btn btn-link btn-sm" id="addingButton{{ product.id }}"
+            aria-expanded="false">
+            {% csrf_token %}
+            <img src= {% static "icons/plus-00be14.svg" %} title="Добавить в приход" alt="Adding Icon" 
+              width="24" height="24">
+          </button>
+          <input type="number" name="quantity_{{ product.id }}" value="1" min="0" max="9999"
+            class="quantity" style="width: 50px; height: 20px; margin-bottom: 0;">
+          <button type="submit" name="checkout" value="Sales" class="checkout btn btn-link btn-sm" id="salesButton{{ product.id }}"
+            aria-expanded="false">
+            {% csrf_token %}
+            <img src= {% static "icons/basket-00be14.svg" %} title="Добавить в корзину" alt="Sales Icon" 
+              width="24" height="24">
+          </button>
+        </div>
+      </td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="7" style="text-align: center;">Настройте фильтры</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<script>
+  function printDiv(divId) {
+    var printContent = document.getElementById(divId).innerHTML;
+    var originalContent = document.body.innerHTML;
+    document.body.innerHTML = printContent;
+    window.print();
+    document.body.innerHTML = originalContent;
+  }
+</script>
+
+<script src={% static "js/jquery/jquery-3.7.0.min.js" %}></script>
+<script src={% static "js/jquery-index.js" %}></script>
+{% endblock %}

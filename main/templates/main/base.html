@@ -1,0 +1,158 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href={% static "css/bootstrap/bootstrap.min.css" %}>
+    <link rel="stylesheet" href={% static "css/index_css.css" %}>
+    <link rel="apple-touch-icon" sizes="180x180" href={% static "favicon/apple-touch-icon.png" %}>
+    <link rel="icon" type="image/png" sizes="32x32" href={% static "favicon/favicon-32x32.png" %}>
+    <link rel="icon" type="image/png" sizes="16x16" href={% static "favicon/favicon-16x16.png" %}>
+    <link rel="manifest" href={% static "favicon/site.webmanifest" %}>
+    <title>AniKans</title>
+</head>
+
+<body>
+    <header>
+        <nav class="navbar navbar-expand bg-dark" 
+            style="position: fixed; width: 100%; top: 0;" data-bs-theme="dark">
+            <div class="container-fluid collapse navbar-collapse" id="navbarSupportedContent">
+            <a class="navbar-brand" href={% url "main:index" %} title="Главная">AniKans</a>
+                <form action="{% url "main:index" %}" method="GET" 
+                    class="navbar-nav me-auto" style="height: 32px;">
+                    <select class="form-select-sm" id="category-select" name="category">
+                        <option selected value="">---Категория---</option>
+                        {% for el in categories %}
+                            <option value={{ el.id }}>{{ el.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <div>
+                        <a class="ms-2 mt-1" style="color: white">Игры</a>
+                        <input id="is_game" class="ms-1 mt-2" type="checkbox" name="checkboxGames" value="false" onchange="filterTitles()">
+                    </div>
+                    <select class="form-select-sm ms-2" id="title-select" name="title" onchange="filterHeroes()">
+                        <option class="anime-title" value="">---Тайтл---</option>
+                        {% for el in titles %}
+                            <option class="anime-title" value={{ el.id }} data-game="{{ el.game|yesno:"true,false" }}">{{ el.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <select class="form-select-sm ms-2" id="hero-select" name="hero">
+                        <option class="anime-heroes" value="">---Персонаж---</option>
+                        {% for el in heroes %}
+                            <option class="anime-heroes" value={{ el.id }} data-title={{ el.title.id }}>{{ el.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <div class="d-flex">
+                        <input id="audit" class="ms-2" type="checkbox" title="Недостачи" name="checkboxAudit" value="" onchange="">
+                        <input id="barcode-input" class="form-control ms-2" type="text" size="13" name="barcode"
+                            placeholder="Штрих-код" oninput="this.value = this.value.slice(0, 13)" aria-label="barcode-input">
+                        <button class="btn btn-outline-success text-white ms-2 px-0 py-0" type="submit" name="search"
+                            style="height: 32px; width: 56px;">
+                            <img src= {% static "icons/search-white.svg" %} title="Поиск" alt="Search Icon" 
+                                width="24" height="24">
+                        </button>
+                    </div>
+                </form>
+                <script>
+                    function filterTitles() {
+                        const isGameChecked = document.getElementById('is_game').checked;
+                        const titleItems = document.querySelectorAll('.anime-title');
+            
+                        titleItems.forEach(title => {
+                            const isGame = title.getAttribute('data-game') === 'true';
+                            if (isGameChecked) {
+                                title.style.display = isGame ? 'list-item' : 'none';
+                            } else {
+                                title.style.display = isGame ? 'none' : 'list-item';
+                            }
+                        });
+                    }
+                    window.onload = filterTitles;
+
+
+                    function filterHeroes() {
+                        const titleSelect = document.getElementById('title-select');
+                        const selectedTitle = titleSelect.value;
+                        const heroSelect = document.getElementById('hero-select');
+                        const heroes = [
+                            {% for el in heroes %}
+                            {
+                                id: "{{ el.id }}",
+                                name: "{{ el.name }}",
+                                titleId: "{{ el.title.id }}"
+                            } {% if not forloop.last %},{% endif %}
+                            {% endfor %}
+                        ];
+                        heroSelect.innerHTML = '<option class="anime-heroes" value="">---Персонаж---</option>';
+                        
+                        if (selectedTitle) {
+                            heroes.forEach(hero => {
+                                const title_id = hero['titleId'];
+                                if (title_id == selectedTitle) {
+                                    const option = document.createElement('option');
+                                    option.value = hero['id'];
+                                    option.textContent = hero['name'];
+                                    heroSelect.appendChild(option);
+                                }
+                            });
+                        }
+                    }
+                </script>
+                <div class="navbar-nav d-flex jystify-content-end ms-2 mb-1" style="height: 32px;">
+                    <a href={% url "journal:adding" %}>
+                        <button type="button" class="btn btn-dark btn-secondary btn-sm" id="addingButton"
+                            aria-expanded="false">
+                            <img src= {% static "icons/plus-00be14.svg" %} title="Пополнение товара" alt="Adding Icon" 
+                                width="24" height="24">
+                            <span id="adding">00</span>
+                        </button>
+                    </a>
+                    <a href={% url "journal:sales" %}>
+                        <button type="button" class="btn btn-dark btn-secondary btn-sm" id="salesButton"
+                            aria-expanded="false">
+                            <img src= {% static "icons/basket-00be14.svg" %} title="Список продаж" alt="Sales Icon" 
+                                width="24" height="24">
+                            <span id="sales">00</span>
+                        </button>
+                    </a>
+                    <a href={% url "journal:history" %}>
+                        <button type="button" class="btn btn-dark btn-secondary btn-sm" id="historyButton"
+                            aria-expanded="false">
+                            <img src= {% static "icons/history-white.svg" %} alt="History Icon" 
+                                width="24" height="24">
+                        </button>
+                    </a>
+                    <a href={% url "admin:index" %}>
+                        <button type="button" class="btn btn-dark btn-secondary btn-sm" id="loginButton"
+                            aria-expanded="false">
+                            <img src= {% static "icons/login-green-00be14.svg" %} alt="Login Icon" 
+                                width="24" height="24">
+                        </button>
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </header>
+        <!-- Content on Page -->
+    <section>
+        <div class="container-fluid position-static" style="margin-top: 56px;">
+            <div class="row mt-1">
+                <div class="col-1"><!-- Left Sidebar --></div>
+                <div id="contentOnPage" class="col-10">
+                    <div>
+                    {% block content %}
+                    {% endblock %}
+                    </div>
+                </div>
+                <div class="col-1"><!-- Rigft Sidebar --></div>
+            </div>
+        </div>
+    </section>
+    <script src={% static "js/bootstrap/bootstrap.bundle.min.js" %}></script>
+</body>
+
+</html>

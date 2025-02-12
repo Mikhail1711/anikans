@@ -1,0 +1,158 @@
+/* body */
+
+body {
+  background-image: url('../images/bg-anikans.jpg'); 
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: center center;
+  background-size: cover;
+  height: 100%;
+  margin-bottom: 50px;
+}
+
+/* grid-table */
+
+.grid-table {
+  background-color: rgba(255, 255, 255, 0.5);
+  table-layout: fixed;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.grid-table th, .grid-table td {
+  background-color: transparent;
+  border: 1px solid #ccc;
+  padding: 10px;
+  text-align: center;
+}
+
+.grid-table th {
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.grid-table td {
+  padding: 10px, 10px, 5px, 5px;
+}
+
+/* products filtered */
+.category-name {
+  width: 14%;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+.title-name, .hero-name {
+  width: 20%;
+  text-align: left;
+}
+
+.price-name, .quantity-name {
+  width: 7%;
+  white-space: nowrap;
+  text-align: right;
+}
+
+.barcode-name {
+  width: 20%;
+}
+
+.butt-on {
+  width: 16%;
+}
+
+.total-discount {
+  width: 12%;
+}
+
+/* journal */
+.date-journal {
+  width: 20%;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hero-journal {
+  width: 14%;
+  text-align: left;
+}
+
+.barcode-journal {
+  width: 15%;
+}
+
+.calculate {
+  width: 23%;
+  white-space: nowrap;
+  text-align: left;
+}
+
+.total-sum {
+  width: 7%;
+}
+
+/* accordion */
+
+.accordion-item, .accordion-button {
+  background-color: transparent;
+  width: 190px;
+}
+
+.accordion-button {
+  height: 48px;
+}
+
+.accordion-button:focus {
+  box-shadow: none;
+}
+
+.accordion-body {
+  width: 200px;
+  text-align: left;
+}
+
+ /* print */
+
+@media print {
+  .no-print,
+  .no-print button,
+  .no-print input {
+      display: none;
+  }
+
+  th, td {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .category-name {
+    width: 80px;
+  }
+  
+  .title-name, .hero-name {
+    width: 130px;
+  }
+  
+  .price-name, .quantity-name {
+    width: 80px;
+  }
+
+  .barcode-name {
+    width: 160px;
+  }
+  
+  .total-discount {
+    width: 100px;
+  }
+
+  .date-journal {
+    width: 170px;
+  }
+
+  .hero-journal {
+    width: 120px;
+  }
+}

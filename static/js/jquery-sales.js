@@ -40,7 +40,7 @@ $(document).ready(function() {
             contentType: 'application/json',
             data: JSON.stringify({
                 cart_data: cartData,
-                csrfmiddlewaretoken: $("[name=csrfmiddlewaretoken]").val(), //'{{ csrf_token }}'
+                csrfmiddlewaretoken: $("[name=csrfmiddlewaretoken]").val(),
             }),
             success: function(response) {
                 location.reload();

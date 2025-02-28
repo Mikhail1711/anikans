@@ -24,7 +24,7 @@
             <a class="navbar-brand" href={% url "main:index" %} title="Главная">AniKans</a>
                 <form action="{% url "main:index" %}" method="GET" 
                     class="navbar-nav me-auto" style="height: 32px;">
-                    <select class="form-select-sm" id="category-select" name="category">
+                    <select class="form-select-sm" style="width: 130px;" id="category-select" name="category">
                         <option selected value="">---Категория---</option>
                         {% for el in categories %}
                             <option value={{ el.id }}>{{ el.name }}</option>
@@ -34,24 +34,24 @@
                         <a class="ms-2 mt-1" style="color: white">Игры</a>
                         <input id="is_game" class="ms-1 mt-2" type="checkbox" name="checkboxGames" value="false" onchange="filterTitles()">
                     </div>
-                    <select class="form-select-sm ms-2" id="title-select" name="title" onchange="filterHeroes()">
+                    <select class="form-select-sm ms-2" style="width: 130px;" id="title-select" name="title" onchange="filterHeroes()">
                         <option class="anime-title" value="">---Тайтл---</option>
                         {% for el in titles %}
                             <option class="anime-title" value={{ el.id }} data-game="{{ el.game|yesno:"true,false" }}">{{ el.name }}</option>
                         {% endfor %}
                     </select>
-                    <select class="form-select-sm ms-2" id="hero-select" name="hero">
+                    <select class="form-select-sm ms-2" style="width: 130px;" id="hero-select" name="hero">
                         <option class="anime-heroes" value="">---Персонаж---</option>
                         {% for el in heroes %}
                             <option class="anime-heroes" value={{ el.id }} data-title={{ el.title.id }}>{{ el.name }}</option>
                         {% endfor %}
                     </select>
                     <div class="d-flex">
-                        <input id="audit" class="ms-2" type="checkbox" title="Недостачи" name="checkboxAudit" value="" onchange="">
-                        <input id="barcode-input" class="form-control ms-2" type="text" size="13" name="barcode"
+                        <input id="audit" class="ms-2" type="checkbox" title="Недостачи" name="checkboxAudit" value="">
+                        <input id="barcode-input" class="form-control ms-2" style="width: 110px;" type="text" size="13" name="barcode"
                             placeholder="Штрих-код" oninput="this.value = this.value.slice(0, 13)" aria-label="barcode-input">
                         <button class="btn btn-outline-success text-white ms-2 px-0 py-0" type="submit" name="search"
-                            style="height: 32px; width: 56px;">
+                            style="height: 32px; width: 40px;">
                             <img src= {% static "icons/search-white.svg" %} title="Поиск" alt="Search Icon" 
                                 width="24" height="24">
                         </button>

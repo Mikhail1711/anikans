@@ -1,18 +1,50 @@
 from django.contrib import admin
 
 from goods.models import Categories, Titles, Heroes, Products
+from journal.models import Journal
 
 
-class Heroesdmin(admin.ModelAdmin):
+class CategoriesAdmin(admin.ModelAdmin):
+    search_fields = ['name']
+    ordering = ['name']
+
+
+class TitlesAdmin(admin.ModelAdmin):
+    search_fields = ['name']
+    ordering = ['name']
+
+
+class HeroesAdmin(admin.ModelAdmin):#
+    autocomplete_fields = ['title']
+    search_fields = ['name', 'title__name']
     list_display = ['name', 'title']
     list_filter = ['title']
-    ordering = ['title']
+    ordering = ['title', 'name']
 
 
 class ProductsAdmin(admin.ModelAdmin):
+    autocomplete_fields = ['category', 'hero']
     list_display = ['category_name', 'title_name', 'hero_name', 'displayed_barcode', 'displayed_item', 'purchase', 'price', 'quantity']
     list_filter = ['category', 'hero__title']
     ordering = ['id']
+
+    def save_model(self, request, obj, form, change):
+        
+
+        if obj.pk is None and obj.barcode != "0000000000000":
+            money = Products.objects.get(barcode="0000000000000")
+            money.quantity -= obj.purchase * obj.quantity
+            money.save()
+            from journal.models import Journal
+            created = Journal.objects.create(
+                type_of_operation = True,
+                category = obj.category,
+                hero = obj.hero,
+                barcode = obj.barcode,
+                quantity = obj.quantity,
+                purchase = obj.purchase
+                )
+        super().save_model(request, obj, form, change)
 
     def category_name(self, obj):
         return obj.category.name
@@ -41,7 +73,7 @@ class ProductsAdmin(admin.ModelAdmin):
 
 
 
-admin.site.register(Categories)
-admin.site.register(Titles)
-admin.site.register(Heroes, Heroesdmin)
+admin.site.register(Categories, CategoriesAdmin)
+admin.site.register(Titles, TitlesAdmin)
+admin.site.register(Heroes, HeroesAdmin)#
 admin.site.register(Products, ProductsAdmin)

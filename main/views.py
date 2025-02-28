@@ -1,5 +1,6 @@
 from django.shortcuts import render
-from django.db.models import Q
+from django.db.models import Q, CharField
+from django.db.models.functions import Cast
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
@@ -26,8 +27,15 @@ def index(request):
         if hero_id:
             products = products.filter(hero_id=hero_id)
         if barcode:
+            products = products.annotate(
+                item_str=Cast('item', CharField()),
+                description_str=Cast('description', CharField())
+            )
             products = products.filter(
-            Q(barcode__endswith=barcode) | Q(item__iendswith=barcode))
+            Q(barcode__endswith=barcode) | 
+            Q(item_str__iendswith=barcode.lower()) | 
+            Q(description_str__icontains=barcode.lower())
+            )
         if audit:
             products = products.filter(quantity__lt=0)
 

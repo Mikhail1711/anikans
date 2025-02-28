@@ -63,7 +63,7 @@ def adding_confirm(request):
 
     Supplies.objects.all().delete()
     money = Products.objects.get(barcode="0000000000000")
-    money.quantity += sum_of_operations
+    money.quantity -= sum_of_operations
     money.save()
     return redirect('journal:adding')
 
@@ -110,7 +110,7 @@ def sales_confirm(request):
 
     Sales.objects.all().delete()
     money = Products.objects.get(barcode="0000000000000")
-    money.quantity -= sum_of_operations
+    money.quantity += sum_of_operations
     money.save()
     return redirect('journal:sales')
 

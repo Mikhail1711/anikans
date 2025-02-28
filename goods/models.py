@@ -35,7 +35,7 @@ class Heroes(models.Model):
         verbose_name_plural = 'Персонажи'
 
     def __str__(self):
-        return f'{self.name} -- {self.title.name}'
+        return f'{self.title.name} -- {self.name}'
 
 
 class Products(models.Model):
@@ -62,21 +62,3 @@ class Products(models.Model):
     def readable_barcode(self):
         return f'{self.barcode[0]} {self.barcode[1:-6]} {self.barcode[-6:]}'
 
-    def save(self, *args, **kwargs):
-        # Переопределение save() родительского класса для учета закупа новых товаров
-        super().save(*args, **kwargs)
-
-        if self.pk is None and self.barcode != "0000000000000":
-            money = Products.objects.get(barcode="0000000000000")
-            money.quantity -= self.purchase * self.quantity
-            money.save()
-            from journal.models import Journal
-
-            created = Journal.objects.create(
-                type_of_operation = True,
-                category = self.category,
-                hero = self.hero,
-                barcode = self.barcode,
-                quantity = self.quantity,
-                purchase = self.purchase
-                )
